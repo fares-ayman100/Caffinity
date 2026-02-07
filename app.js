@@ -2,6 +2,7 @@ const express = require('express');
 const morgan = require('morgan');
 const httpStatus = require('./Utils/httpStatus');
 const productsRoutes = require('./Routes/productsRoutes');
+const usersRoutes = require('./Routes/usersRoutes');
 const AppError = require('./Utils/appError');
 const errorController = require('./Controllers/errorController');
 
@@ -24,6 +25,7 @@ app.get('/api/v1/health', (req, res) => {
 });
 
 app.use('/api/v1/products', productsRoutes);
+app.use('/api/v1/users', usersRoutes);
 
 app.use('/', (req, res, next) => {
   next(
