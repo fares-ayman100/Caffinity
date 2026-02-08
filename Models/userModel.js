@@ -42,17 +42,8 @@ const userSchema = new mongoose.Schema(
     },
   },
 
-  // to make virtual field show with another field in output
-  {
-    toJSON: { virtuals: true },
-    toObject: { virtuals: true },
-    id: false,
-  },
 );
 
-userSchema.virtual('fullName').get(function () {
-  return `${this.firstName} ${this.lastName}`;
-});
 
 userSchema.pre('save', async function () {
   if (!this.isModified('password')) {
@@ -62,6 +53,7 @@ userSchema.pre('save', async function () {
   this.confirmPassword = undefined;
 });
 
+  // instance method (available in all user document)
 userSchema.methods.correctPassword = async function (
   enterPassword,
   hashedPassword,
