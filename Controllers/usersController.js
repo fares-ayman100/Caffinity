@@ -1,15 +1,17 @@
 const User = require('../Models/userModel');
 const httpStatus = require('../Utils/httpStatus');
 const catchAsync = require('../Utils/catchAsync');
-const signUp = catchAsync(async (req, res, next) => {
-  const newUser = await User.create(req.body);
-  res.status(201).json({
+
+
+const getAllUsers = catchAsync(async (req, res, next) => {
+  const users = await User.find();
+  res.status(200).json({
     status: httpStatus.SUCCESS,
-    data: {
-      user: newUser,
-    },
+    results: users.length,
+    data: users,
   });
 });
+
 module.exports = {
-  signUp,
+  getAllUsers,
 };

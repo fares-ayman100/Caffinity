@@ -4,13 +4,9 @@ const bcrypt = require('bcryptjs');
 
 const userSchema = new mongoose.Schema(
   {
-    firstName: {
+    name: {
       type: String,
-      required: [true, 'first name is Required'],
-    },
-    lastName: {
-      type: String,
-      required: [true, 'last name is Required'],
+      required: [true, 'name is Required'],
     },
     email: {
       type: String,
@@ -29,6 +25,21 @@ const userSchema = new mongoose.Schema(
       minlength: [8, 'password must atleast 8 charachter'],
       select: false,
     },
+    confirmPassword: {
+      type: String,
+      required: [true, 'Please confirm your password'],
+      validate: {
+        validator: function (el) {
+          return el === this.password;
+        },
+        message: 'PasswordConfirm not the same passwrod',
+      },
+    },
+    role: {
+      type: String,
+      default: 'user',
+      enum: ['user', 'admin'],
+    },
   },
 
   // to make virtual field show with another field in output
@@ -45,9 +56,17 @@ userSchema.virtual('fullName').get(function () {
 
 userSchema.pre('save', async function () {
   if (!this.isModified('password')) {
-    return next();
+    return;
   }
   this.password = await bcrypt.hash(this.password, 12);
+  this.confirmPassword = undefined;
 });
+
+userSchema.methods.correctPassword = async function (
+  enterPassword,
+  hashedPassword,
+) {
+  return await bcrypt.compare(enterPassword, hashedPassword);
+};
 const User = mongoose.model('User', userSchema);
 module.exports = User;
