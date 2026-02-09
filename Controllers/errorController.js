@@ -17,6 +17,12 @@ handelValidatorErrorDB = (err) => {
   return new AppError(message, 404);
 };
 
+handelExpiredTokenError = () => {
+  return new AppError('Token is expired. try login again', 401);
+};
+handelJsonWebTokenError = () => {
+  return new AppError('Token is invalid. try login again', 401);
+};
 sendDevError = (err, res) => {
   res.status(err.statusCode).json({
     status: err.status,
@@ -62,6 +68,12 @@ module.exports = (err, req, res, next) => {
     if (error.name === 'ValidationError') {
       error = handelValidatorErrorDB(error);
     }
-    sendProdError(error, res);
+    if (error.name === 'TokenExpiredError') {
+      error = handelExpiredTokenError();
+    }
+    if (error.name === 'JsonWebTokenError') {
+      error = handelJsonWebTokenError();
+    }
+      sendProdError(error, res);
   }
 };
