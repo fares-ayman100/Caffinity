@@ -5,6 +5,7 @@ const catchAsync = require('../Utils/catchAsync');
 const AppError = require('../Utils/appError');
 const { promisify } = require('util');
 
+// 2) HELPER FUNCTIONS (UTILS)
 const sendToken = (id) => {
   console.log('JWT_EXPIRED_IN:', process.env.JWT_EXPIRED_IN);
   console.log('JWT_SECRET:', process.env.JWT_SECRET);
@@ -14,6 +15,7 @@ const sendToken = (id) => {
   });
 };
 
+// 3) MIDDLEWARES
 const protect = catchAsync(async (req, res, next) => {
   // 1) get the token and check if it exit
   let token;
@@ -64,6 +66,23 @@ const protect = catchAsync(async (req, res, next) => {
   next();
 });
 
+const restrictTo = (...roles) => {
+
+  // roles = [user - admin - adminstrator] => role= user
+  return (req, res, next) => {
+    if (!roles.includes(req.user.role)) {
+      return next(
+        new AppError(
+          'You do not have permission to do this action.',
+          403,
+        ),
+      );
+    }
+    next();
+  };
+};
+
+// 4) CONTROLLERS
 const signUp = catchAsync(async (req, res, next) => {
   const newUser = await User.create({
     name: req.body.name,
@@ -117,4 +136,5 @@ module.exports = {
   signUp,
   singIn,
   protect,
+  restrictTo,
 };

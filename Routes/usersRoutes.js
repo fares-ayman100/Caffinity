@@ -8,5 +8,23 @@ router.route('/signin').post(authController.singIn);
 
 router
   .route('/')
-  .get(authController.protect, usersController.getAllUsers);
+  .get(
+    authController.protect,
+    authController.restrictTo('admin'),
+    usersController.getAllUsers,
+  );
+
+router
+  .route('/:id')
+  .get(
+    authController.protect,
+    authController.restrictTo('admin'),
+    usersController.getUser,
+  )
+  .delete(
+    authController.protect,
+    authController.restrictTo('admin'),
+    usersController.deleteUser,
+  );
+    
 module.exports = router;

@@ -5,13 +5,25 @@ const router = express.Router();
 
 router
   .route('/')
-  .get(authController.protect, productsController.getAllProducts)
-  .post(productsController.addProduct);
+  .get(productsController.getAllProducts)
+  .post(
+    authController.protect,
+    authController.restrictTo('admin'),
+    productsController.addProduct,
+  );
 
 router
   .route('/:id')
   .get(productsController.getProduct)
-  .patch(productsController.updateProduct)
-  .delete(productsController.deleteProduct);
+  .patch(
+    authController.protect,
+    authController.restrictTo('admin'),
+    productsController.updateProduct,
+  )
+  .delete(
+    authController.protect,
+    authController.restrictTo('admin'),
+    productsController.deleteProduct,
+  );
 
 module.exports = router;
