@@ -3,6 +3,7 @@ const User = require('../Models/userModel');
 const httpStatus = require('../Utils/httpStatus');
 const catchAsync = require('../Utils/catchAsync');
 const AppError = require('../Utils/appError');
+const sendEmail = require('../Utils/email');
 const { promisify } = require('util');
 
 // 2) HELPER FUNCTIONS (UTILS)
@@ -85,13 +86,19 @@ const restrictTo = (...roles) => {
 // 4) CONTROLLERS
 const signUp = catchAsync(async (req, res, next) => {
   const newUser = await User.create({
-    name: req.body.name,
+    firstName: req.body.firstName,
+    lastName: req.body.lastName,
     email: req.body.email,
     password: req.body.password,
     confirmPassword: req.body.confirmPassword,
   });
 
   const token = sendToken(newUser._id);
+  sendEmail({
+    email: newUser.email,
+    subject: 'Welcome',
+    message: 'Welcome in caffinity family',
+  });
 
   res.status(201).json({
     status: httpStatus.SUCCESS,
