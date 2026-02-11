@@ -66,6 +66,13 @@ const updateMe = catchAsync(async (req, res, next) => {
   });
 });
 
+const deleteMe = catchAsync(async (req, res, next) => {
+  await User.findByIdAndUpdate(req.user.id, {
+    active: false,
+  });
+  res.status(204).json(null);
+});
+
 const deleteUser = catchAsync(async (req, res, next) => {
   const user = await User.findByIdAndDelete(req.params.id);
   if (!user) {
@@ -80,5 +87,6 @@ module.exports = {
   getAllUsers,
   getUser,
   updateMe,
+  deleteMe,
   deleteUser,
 };

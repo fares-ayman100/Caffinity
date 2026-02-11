@@ -7,6 +7,14 @@ router.route('/signup').post(authController.signUp);
 router.route('/signin').post(authController.singIn);
 
 router
+  .route('/updateMe')
+  .patch(authController.protect, usersController.updateMe);
+
+router
+  .route('/deleteMe')
+  .delete(authController.protect, usersController.deleteMe);
+  
+router
   .route('/')
   .get(
     authController.protect,
@@ -26,8 +34,5 @@ router
     authController.restrictTo('admin'),
     usersController.deleteUser,
   );
-    
-  router
-    .route('/updateMe')
-    .patch(authController.protect, usersController.updateMe);
+      
 module.exports = router;
