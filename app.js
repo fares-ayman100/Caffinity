@@ -2,17 +2,17 @@ const express = require('express');
 const morgan = require('morgan');
 const cookieParser = require('cookie-parser');
 const rateLimter = require('express-rate-limit');
-const mongoSanitize = require('express-mongo-sanitize');
+const ExpressMongoSanitize = require('express-mongo-sanitize');
 const helmet = require('helmet');
+const hpp = require('hpp');
 const httpStatus = require('./Utils/httpStatus');
 const productsRoutes = require('./Routes/productsRoutes');
 const usersRoutes = require('./Routes/usersRoutes');
 const AppError = require('./Utils/appError');
 const errorController = require('./Controllers/errorController');
-const ExpressMongoSanitize = require('express-mongo-sanitize');
-const hpp = require('hpp');
 
 const app = express();
+
 const limiter = rateLimter({
   windowMs: 60 * 60 * 1000,
   limit: 100,
@@ -28,10 +28,10 @@ if (process.env.NODE_ENV == 'development') {
   app.use(morgan('dev'));
 }
 
-// Enable extended query parsing so Express can handle nested filters (e.g. price[gte]=3)
-// app.set('query parser', 'extended'); (express@5.0.0)
+app.use(express.json({ limit: '10kb' }));
 
-app.use(express.json());
+// Enable extended query parsing so Express can handle nested filters (e.g. price[gte]=3)
+app.set('query parser', 'extended');
 
 // Against from NoSql query injection
 app.use(ExpressMongoSanitize());

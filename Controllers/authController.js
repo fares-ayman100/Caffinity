@@ -110,11 +110,11 @@ const signUp = catchAsync(async (req, res, next) => {
     confirmPassword: req.body.confirmPassword,
   });
 
-  sendEmail({
-    email: newUser.email,
-    subject: 'Welcome',
-    message: 'Welcome in caffinity family',
-  });
+  // sendEmail({
+  //   email: newUser.email,
+  //   subject: 'Welcome',
+  //   message: 'Welcome in caffinity family',
+  // });
 
   sendToken(newUser, 201, res);
 });
