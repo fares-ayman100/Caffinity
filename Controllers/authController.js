@@ -7,12 +7,27 @@ const sendEmail = require('../Utils/email');
 const { promisify } = require('util');
 
 // 2) HELPER FUNCTIONS (UTILS)
-const sendToken = (id) => {
-  console.log('JWT_EXPIRED_IN:', process.env.JWT_EXPIRED_IN);
-  console.log('JWT_SECRET:', process.env.JWT_SECRET);
-
-  return jwt.sign({ id }, process.env.JWT_SECRET, {
+const sendToken = (user, statusCode, res) => {
+  const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRED_IN,
+  });
+
+  const cookieOption = {
+    maxAge: process.env.JWT_EXPIRED_TOKEN * 24 * 60 * 60 * 1000,
+    httpOnly: true,
+  };
+
+  if (process.env.NODE_ENV === 'production')
+    cookieOption.secure = true;
+
+  res.cookie('jwt', token, cookieOption);
+
+  res.status(statusCode).json({
+    status: httpStatus.SUCCESS,
+    token,
+    data: {
+      user,
+    },
   });
 };
 
@@ -20,7 +35,9 @@ const sendToken = (id) => {
 const protect = catchAsync(async (req, res, next) => {
   // 1) get the token and check if it exit
   let token;
-  if (
+  if (req.cookies && req.cookies.jwt) {
+    token = req.cookies.jwt;
+  } else if (
     req.headers.authorization &&
     req.headers.authorization.startsWith('Bearer')
   ) {
@@ -93,50 +110,32 @@ const signUp = catchAsync(async (req, res, next) => {
     confirmPassword: req.body.confirmPassword,
   });
 
-  const token = sendToken(newUser._id);
   sendEmail({
     email: newUser.email,
     subject: 'Welcome',
     message: 'Welcome in caffinity family',
   });
 
-  res.status(201).json({
-    status: httpStatus.SUCCESS,
-    token,
-    data: {
-      user: newUser,
-    },
-  });
+  sendToken(newUser, 201, res);
 });
 
 const singIn = catchAsync(async (req, res, next) => {
   const { email, password } = req.body;
 
-  // 1) chek if email & password is exit
   if (!email || !password) {
-    return next(
-      new AppError('email and pasword is required', 400),
-    );
+    return next(new AppError('email and password is required', 400));
   }
 
-  // 2) chek if email & password is correct
   const user = await User.findOne({ email }).select('+password');
 
   if (
     !user ||
     !(await user.correctPassword(password, user.password))
   ) {
-    return next(
-      new AppError('Incorrect email or password', 401),
-    );
+    return next(new AppError('Incorrect email or password', 401));
   }
 
-  // 3) send token
-  const token = sendToken(user._id);
-  res.status(200).json({
-    status: httpStatus.SUCCESS,
-    token,
-  });
+  sendToken(user, 200, res);
 });
 
 module.exports = {

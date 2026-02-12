@@ -1,13 +1,22 @@
 const express = require('express');
 const morgan = require('morgan');
+const cookieParser = require('cookie-parser');
 const httpStatus = require('./Utils/httpStatus');
 const productsRoutes = require('./Routes/productsRoutes');
 const usersRoutes = require('./Routes/usersRoutes');
 const AppError = require('./Utils/appError');
 const errorController = require('./Controllers/errorController');
+const rateLimter = require('express-rate-limit');
 
 const app = express();
+const limiter = rateLimter({
+  windowMs: 60 * 60 * 1000,
+  limit: 100,
+  message:
+    'Too many requests from this IP, please try again in an hour!.',
+});
 
+  // Global Middleware
 if (process.env.NODE_ENV == 'development') {
   app.use(morgan('dev'));
 }
@@ -17,6 +26,10 @@ app.set('query parser', 'extended');
 
 app.use(express.json());
 
+app.use(cookieParser());
+
+app.use('/api', limiter);
+
 app.get('/api/v1/health', (req, res) => {
   res.status(200).json({
     status: httpStatus.SUCCESS,
@@ -25,6 +38,7 @@ app.get('/api/v1/health', (req, res) => {
 });
 
 app.use('/api/v1/products', productsRoutes);
+
 app.use('/api/v1/users', usersRoutes);
 
 app.use('/', (req, res, next) => {
