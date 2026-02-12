@@ -6,10 +6,11 @@ const ExpressMongoSanitize = require('express-mongo-sanitize');
 const helmet = require('helmet');
 const hpp = require('hpp');
 const httpStatus = require('./Utils/httpStatus');
-const productsRoutes = require('./Routes/productsRoutes');
-const usersRoutes = require('./Routes/usersRoutes');
 const AppError = require('./Utils/appError');
 const errorController = require('./Controllers/errorController');
+const productsRoutes = require('./Routes/productsRoutes');
+const usersRoutes = require('./Routes/usersRoutes');
+const reviewsRouter = require('./Routes/reviewsRoutes');
 
 const app = express();
 
@@ -55,8 +56,8 @@ app.get('/api/v1/health', (req, res) => {
 });
 
 app.use('/api/v1/products', productsRoutes);
-
 app.use('/api/v1/users', usersRoutes);
+app.use('/api/v1/reviews', reviewsRouter);
 
 app.use('/', (req, res, next) => {
   next(
