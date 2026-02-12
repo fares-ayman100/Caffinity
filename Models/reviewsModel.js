@@ -10,8 +10,8 @@ const reviewSchema = new mongoose.Schema({
   rating: {
     type: Number,
     required: true,
-    min: [1, 'rating must be above 1'],
-    max: [5, 'rating must be under 5'],
+    min: [1, 'Rating must be above 1.0'],
+    max: [5, 'Rating must be below 5.0'],
   },
   createdAt: {
     type: Date,
@@ -31,12 +31,14 @@ const reviewSchema = new mongoose.Schema({
 
 reviewSchema.pre(/^find/, function () {
   this.populate({
-    path: 'product',
-    select: 'name',
-  }).populate({
     path: 'user',
     select: 'firstName lastName',
   });
+
+  //   .populate({
+  //     path: 'product',
+  //     select: 'name',
+  //   })
 });
 
 const Review = mongoose.model('Review', reviewSchema);

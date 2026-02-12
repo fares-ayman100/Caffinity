@@ -19,7 +19,9 @@ const getAllProducts = catchAsync(async (req, res, next) => {
 });
 
 const getProduct = catchAsync(async (req, res, next) => {
-  const product = await Product.findById(req.params.id);
+  const product = await Product.findById(req.params.id).populate(
+    'reviews',
+  );
 
   if (!product) {
     return next(
