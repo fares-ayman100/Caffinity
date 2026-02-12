@@ -1,12 +1,13 @@
 const express = require('express');
 const morgan = require('morgan');
 const cookieParser = require('cookie-parser');
+const rateLimter = require('express-rate-limit');
+const helmet = require('helmet');
 const httpStatus = require('./Utils/httpStatus');
 const productsRoutes = require('./Routes/productsRoutes');
 const usersRoutes = require('./Routes/usersRoutes');
 const AppError = require('./Utils/appError');
 const errorController = require('./Controllers/errorController');
-const rateLimter = require('express-rate-limit');
 
 const app = express();
 const limiter = rateLimter({
@@ -15,6 +16,9 @@ const limiter = rateLimter({
   message:
     'Too many requests from this IP, please try again in an hour!.',
 });
+
+  // Add Http Security Headers
+  app.use(helmet());
 
   // Global Middleware
 if (process.env.NODE_ENV == 'development') {
