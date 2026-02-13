@@ -1,7 +1,10 @@
 const express = require('express');
 const authController = require('../Controllers/authController');
 const reviewController = require('../Controllers/reviewController');
-const router = express.Router();
+
+// tours/121548415/reviews
+const router = express.Router({ mergeParams: true });
+
 
 router
   .route('/')
@@ -9,7 +12,7 @@ router
   .post(
     authController.protect,
     authController.restrictTo('user'),
-    reviewController.createReviwe,
+    reviewController.createReview,
   );
 
 router

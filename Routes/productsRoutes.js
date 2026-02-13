@@ -1,7 +1,10 @@
 const express = require('express');
 const productsController = require('../Controllers/productsController');
 const authController = require('../Controllers/authController');
+const reviewRouter = require('../Routes/reviewsRoutes');
 const router = express.Router();
+
+router.use('/:productId/reviews', reviewRouter);
 
 router
   .route('/')

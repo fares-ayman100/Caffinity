@@ -1,7 +1,4 @@
-// review / rating / created at / ref to tour / ref to user
-
 const mongoose = require('mongoose');
-const { path } = require('../app');
 const reviewSchema = new mongoose.Schema({
   review: {
     type: String,

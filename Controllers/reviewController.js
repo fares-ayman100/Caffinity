@@ -4,7 +4,10 @@ const catchAsync = require('../Utils/catchAsync');
 const AppError = require('../Utils/appError');
 
 const getAllReviews = catchAsync(async (req, res, next) => {
-  const reviews = await Review.find();
+  let filter = {};
+  if (req.params.productId)
+    filter = { product: req.params.productId };
+  const reviews = await Review.find(filter);
   res.status(200).json({
     status: httpStatus.SUCCESS,
     results: reviews.length,
@@ -25,7 +28,10 @@ const getReview = catchAsync(async (req, res, next) => {
   });
 });
 
-const createReviwe = catchAsync(async (req, res, next) => {
+const createReview = catchAsync(async (req, res, next) => {
+  if (!req.body.product) req.body.product = req.params.productId;
+  if (!req.body.user) req.body.user = req.user.id;
+
   const review = await Review.create(req.body);
   res.status(200).json({
     status: httpStatus.SUCCESS,
@@ -62,7 +68,7 @@ const deleteReview = catchAsync(async (req, res, next) => {
 module.exports = {
   getAllReviews,
   getReview,
-  createReviwe,
+  createReview,
   updateReview,
   deleteReview,
 };
