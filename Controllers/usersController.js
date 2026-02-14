@@ -1,8 +1,8 @@
 const User = require('../Models/userModel');
 const httpStatus = require('../Utils/httpStatus');
 const catchAsync = require('../Utils/catchAsync');
+const factory = require('./handelrFactory');
 const AppError = require('../Utils/appError');
-
 
 const filterObj = (obj, ...allawedField) => {
   const newObj = {};
@@ -14,28 +14,6 @@ const filterObj = (obj, ...allawedField) => {
   return newObj;
 };
 
-const getAllUsers = catchAsync(async (req, res, next) => {
-  const users = await User.find();
-  res.status(200).json({
-    status: httpStatus.SUCCESS,
-    results: users.length,
-    data: users,
-  });
-});
-
-const getUser = catchAsync(async (req, res, next) => {
-  const user = await User.findById(req.params.id);
-  if (!user) {
-    return next(
-      new AppError('not found the user with that ID.', 404),
-    );
-  }
-  res.status(200).json({
-    status: httpStatus.SUCCESS,
-    data: user,
-  });
-});
-
 const updateMe = catchAsync(async (req, res, next) => {
   // 1) don't pass password in the body
   if (req.body.password) {
@@ -46,11 +24,11 @@ const updateMe = catchAsync(async (req, res, next) => {
       ),
     );
   }
+
   // 2) filter object
   const filteredObject = filterObj(req.body, 'firstName', 'lastName');
 
   // 3) update user data
-
   const updatedUser = await User.findByIdAndUpdate(
     req.user.id,
     filteredObject,
@@ -73,15 +51,9 @@ const deleteMe = catchAsync(async (req, res, next) => {
   res.status(204).json(null);
 });
 
-const deleteUser = catchAsync(async (req, res, next) => {
-  const user = await User.findByIdAndDelete(req.params.id);
-  if (!user) {
-    return next(
-      new AppError('not found the user with that ID.', 404),
-    );
-  }
-  res.status(204).json(null);
-});
+const getAllUsers = factory.getAllDoc(User);
+const getUser = factory.getDoc(User);
+const deleteUser = factory.deleteDoc(User);
 
 module.exports = {
   getAllUsers,

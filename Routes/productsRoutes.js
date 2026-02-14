@@ -12,7 +12,7 @@ router
   .post(
     authController.protect,
     authController.restrictTo('admin'),
-    productsController.addProduct,
+    productsController.createProduct,
   );
 
 router
