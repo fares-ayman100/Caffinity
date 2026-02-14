@@ -7,6 +7,10 @@ router.route('/signup').post(authController.signUp);
 router.route('/signin').post(authController.singIn);
 
 router
+.route('/getMe')
+.get(authController.protect,usersController.getMe)
+
+router
   .route('/updateMe')
   .patch(authController.protect, usersController.updateMe);
 

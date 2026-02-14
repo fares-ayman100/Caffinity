@@ -14,6 +14,14 @@ const filterObj = (obj, ...allawedField) => {
   return newObj;
 };
 
+const getMe = catchAsync(async (req, res, next) => {
+  const user = await User.findById(req.user.id);
+  res.status(200).json({
+    status: httpStatus.SUCCESS,
+    data: user,
+  });
+});
+
 const updateMe = catchAsync(async (req, res, next) => {
   // 1) don't pass password in the body
   if (req.body.password) {
@@ -58,6 +66,7 @@ const deleteUser = factory.deleteDoc(User);
 module.exports = {
   getAllUsers,
   getUser,
+  getMe,
   updateMe,
   deleteMe,
   deleteUser,
