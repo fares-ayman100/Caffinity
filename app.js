@@ -5,6 +5,8 @@ const rateLimter = require('express-rate-limit');
 const ExpressMongoSanitize = require('express-mongo-sanitize');
 const helmet = require('helmet');
 const hpp = require('hpp');
+const swaggerUi = require('swagger-ui-express');
+const swaggerSpec = require('./doc/swagger');
 const httpStatus = require('./Utils/httpStatus');
 const AppError = require('./Utils/appError');
 const errorController = require('./Controllers/errorController');
@@ -55,6 +57,8 @@ app.get('/api/v1/health', (req, res) => {
     message: 'API is running',
   });
 });
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.use('/api/v1/products', productsRoutes);
 app.use('/api/v1/users', usersRoutes);

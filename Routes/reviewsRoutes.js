@@ -2,7 +2,7 @@ const express = require('express');
 const authController = require('../Controllers/authController');
 const reviewController = require('../Controllers/reviewController');
 
-// tours/121548415/reviews
+// Nested under /products/:productId/reviews
 const router = express.Router({ mergeParams: true });
 
 router.use(authController.protect);
