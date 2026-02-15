@@ -27,6 +27,9 @@ const reviewSchema = new mongoose.Schema({
   },
 });
 
+// to prevent user create more than review on same product
+// reviewSchema.index({ product: 1, user: 1 }, { unique: true });
+
 reviewSchema.pre(/^find/, function () {
   // this is point to Review model
   this.populate({
