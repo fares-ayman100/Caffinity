@@ -61,13 +61,26 @@ const deleteMe = catchAsync(async (req, res, next) => {
 
 const getAllUsers = factory.getAllDoc(User);
 const getUser = factory.getDoc(User);
+// Not Update User Password
+const preventUpdatePassword=(req,res,next)=>{
+
+  if (req.body.password) {
+    return next(
+      new AppError('Password cannot be updated through this route.', 400)
+    );
+  }
+  next();
+}
+const updateUser = factory.updateDoc(User);
 const deleteUser = factory.deleteDoc(User);
 
 module.exports = {
-  getAllUsers,
-  getUser,
   getMe,
   updateMe,
   deleteMe,
+  getAllUsers,
+  getUser,
+  updateUser,
   deleteUser,
+  preventUpdatePassword,
 };

@@ -44,6 +44,7 @@ app.use(hpp({whitelist:[
   "ratingsAverage"
 ]}));
 
+// Enable reading cookies from requests
 app.use(cookieParser());
 
 app.use('/api', limiter);

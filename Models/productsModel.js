@@ -1,4 +1,6 @@
 const mongoose = require('mongoose');
+const slugify = require('slugify');
+
 const productSchema = new mongoose.Schema(
   {
     name: {
@@ -66,6 +68,9 @@ const productSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
+    slug: {
+      type: String,
+    },
   },
   {
     toJSON: { virtuals: true },
@@ -73,6 +78,14 @@ const productSchema = new mongoose.Schema(
     id: false,
   },
 );
+
+// This index to improve the performance
+productSchema.index({ price: 1, ratingsAverage: 1 });
+productSchema.index({ slug: 1 });
+
+productSchema.pre('save', function () {
+  this.slug = slugify(this.name, { lower: true });
+});
 
 productSchema.virtual('reviews', {
   ref: 'Review',
