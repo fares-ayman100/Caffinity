@@ -12,7 +12,7 @@ const getAllDoc = (Model) =>
     const featurse = new ApiFeatures(Model.find(filter), req.query)
       .filter()
       .sort();
-    const doc = await featurse.query.explain();
+    const doc = await featurse.query;
 
     res.status(200).json({
       status: httpStatus.SUCCESS,

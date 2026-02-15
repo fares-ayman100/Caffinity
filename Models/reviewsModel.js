@@ -33,34 +33,51 @@ reviewSchema.pre(/^find/, function () {
     path: 'user',
     select: 'firstName lastName',
   });
-
   //   .populate({
   //     path: 'product',
   //     select: 'name',
   //   })
 });
 
-reviewSchema.statics.calcAverageSchema = async function (productId) {
+reviewSchema.statics.calcAverageRating = async function (productId) {
   const stats = await this.aggregate([
     {
-      $match: { product: productId },
+      $match: { product: new mongoose.Types.ObjectId(productId) },
     },
     {
       $group: {
         _id: '$product',
         avgRating: { $avg: '$rating' },
+        nRating: { $sum: 1 },
       },
     },
   ]);
-  console.log(stats);
-  await Product.findByIdAndUpdate(productId, {
-    ratingsAverage: stats[0].avgRating,
-  });
+
+  // console.log(stats);
+  if (stats.length > 0) {
+    await Product.findByIdAndUpdate(productId, {
+      ratingsAverage: stats[0].avgRating,
+      ratingsQuantity: stats[0].nRating,
+    });
+  } else {
+    await Product.findByIdAndUpdate(productId, {
+      ratingsAverage: 4.5,
+      ratingsQuantity: 0,
+    });
+  }
 };
 
 reviewSchema.post('save', async function () {
-  // this point on review document
-  await this.constructor.calcAverageSchema(this.product);
+  //this.constructor === Review
+  await this.constructor.calcAverageRating(this.product);
+});
+
+reviewSchema.pre(/^findOneAnd/, async function () {
+  this.r = await this.clone().findOne();
+});
+
+reviewSchema.post(/^findOneAnd/, async function () {
+  await this.r.constructor.calcAverageRating(this.r.product);
 });
 
 
