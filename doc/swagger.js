@@ -12,7 +12,7 @@ const options = {
     },
     servers: [
       {
-        url: 'https://caffinity.vercel.app/api/v1',
+        url: 'https://caffinity-nine.vercel.app',
         description: 'API base path',
       },
     ],
