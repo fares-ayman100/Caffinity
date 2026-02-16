@@ -24,11 +24,11 @@ const limiter = rateLimter({
 });
 
   // Add Http Security Headers
-  app.use(
-    helmet({
-      contentSecurityPolicy: false,
-    }),
-  );
+  // app.use(
+  //   helmet({
+  //     contentSecurityPolicy: false,
+  //   }),
+  // );
 
 
   // Global Middleware
