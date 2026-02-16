@@ -16,6 +16,19 @@ const reviewsRouter = require('./Routes/reviewsRoutes');
 
 const app = express();
 
+// swagger-api
+app.use(
+  '/api-docs',
+  swaggerUi.serve,
+  swaggerUi.setup(swaggerSpec, {
+    customCssUrl:
+      'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.17.14/swagger-ui.min.css',
+    customJs: [
+      'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.17.14/swagger-ui-bundle.min.js',
+      'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.17.14/swagger-ui-standalone-preset.min.js',
+    ],
+  }),
+);
 const limiter = rateLimter({
   windowMs: 60 * 60 * 1000,
   limit: 100,
@@ -24,12 +37,7 @@ const limiter = rateLimter({
 });
 
   // Add Http Security Headers
-  // app.use(
-  //   helmet({
-  //     contentSecurityPolicy: false,
-  //   }),
-  // );
-
+  app.use(helmet());
 
   // Global Middleware
 if (process.env.NODE_ENV == 'development') {
@@ -62,20 +70,6 @@ app.get('/api/v1/health', (req, res) => {
     message: 'API is running',
   });
 });
-
-app.use(
-  '/api-docs',
-  swaggerUi.serve,
-  swaggerUi.setup(swaggerSpec, {
-    customCssUrl:
-      'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.17.14/swagger-ui.min.css',
-    customJs: [
-      'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.17.14/swagger-ui-bundle.min.js',
-      'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.17.14/swagger-ui-standalone-preset.min.js',
-    ],
-  }),
-);
-
 
 app.use('/api/v1/products', productsRoutes);
 app.use('/api/v1/users', usersRoutes);
