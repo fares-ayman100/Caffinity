@@ -63,7 +63,10 @@ app.get('/api/v1/health', (req, res) => {
   });
 });
 
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.use('/api-docs', swaggerUi.serve);
+
+app.get('/api-docs', swaggerUi.setup(swaggerSpec));
+
 
 app.use('/api/v1/products', productsRoutes);
 app.use('/api/v1/users', usersRoutes);
