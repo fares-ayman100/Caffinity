@@ -5,41 +5,17 @@ const rateLimter = require('express-rate-limit');
 const ExpressMongoSanitize = require('express-mongo-sanitize');
 const helmet = require('helmet');
 const hpp = require('hpp');
-const mongoose = require('mongoose');
-
 const swaggerUi = require('swagger-ui-express');
 const swaggerSpec = require('./doc/swagger');
-
 const httpStatus = require('./Utils/httpStatus');
 const AppError = require('./Utils/appError');
 const errorController = require('./Controllers/errorController');
-
 const productsRoutes = require('./Routes/productsRoutes');
 const usersRoutes = require('./Routes/usersRoutes');
 const reviewsRouter = require('./Routes/reviewsRoutes');
 
 const app = express();
 
-/* =========================
-   DATABASE CONNECTION
-========================= */
-mongoose
-  .connect(process.env.DATABASE)
-  .then(() => console.log('✅ Connection Successful'))
-  .catch((err) => console.error(err));
-
-/* =========================
-   SECURITY
-========================= */
-app.use(
-  helmet({
-    contentSecurityPolicy: false,
-  })
-);
-
-/* =========================
-   RATE LIMITER
-========================= */
 const limiter = rateLimter({
   windowMs: 60 * 60 * 1000,
   limit: 100,
@@ -47,29 +23,39 @@ const limiter = rateLimter({
     'Too many requests from this IP, please try again in an hour!.',
 });
 
-if (process.env.NODE_ENV === 'development') {
+  // Add Http Security Headers
+  // app.use(
+  //   helmet({
+  //     contentSecurityPolicy: false,
+  //   }),
+  // );
+
+
+  // Global Middleware
+if (process.env.NODE_ENV == 'development') {
   app.use(morgan('dev'));
 }
 
-/* =========================
-   GLOBAL MIDDLEWARE
-========================= */
 app.use(express.json({ limit: '10kb' }));
+
+// Enable extended query parsing so Express can handle nested filters (e.g. price[gte]=3)
 app.set('query parser', 'extended');
+
+// Against from NoSql query injection
 app.use(ExpressMongoSanitize());
 
-app.use(
-  hpp({
-    whitelist: ['category', 'ratingsQuantity', 'ratingsAverage'],
-  }),
-);
+// Prevent parameter pollution
+app.use(hpp({whitelist:[
+  "category",
+  "ratingsQuantity",
+  "ratingsAverage"
+]}));
 
+// Enable reading cookies from requests
 app.use(cookieParser());
+
 app.use('/api', limiter);
 
-/* =========================
-   ROUTES
-========================= */
 app.get('/api/v1/health', (req, res) => {
   res.status(200).json({
     status: httpStatus.SUCCESS,
@@ -77,7 +63,6 @@ app.get('/api/v1/health', (req, res) => {
   });
 });
 
-/* Swagger Docs */
 app.use(
   '/api-docs',
   swaggerUi.serve,
@@ -96,9 +81,6 @@ app.use('/api/v1/products', productsRoutes);
 app.use('/api/v1/users', usersRoutes);
 app.use('/api/v1/reviews', reviewsRouter);
 
-/* =========================
-   ERROR HANDLING
-========================= */
 app.use('/', (req, res, next) => {
   next(
     new AppError(
