@@ -138,9 +138,24 @@ const singIn = catchAsync(async (req, res, next) => {
   sendToken(user, 200, res);
 });
 
+const forgotPassword = async (req, res, next) => {
+  // 1) get user by email
+  const user = await User.findOne({ email: req.body.email });
+  if (!user) {
+    return next(new AppError('User is not found', 404));
+  }
+
+  // 2) generate random reset token
+  const resetToken = user.createPasswordResetToken();
+  await user.save({ validateBeforeSave: false });
+
+  // 3) send it to email
+};
+
 module.exports = {
   signUp,
   singIn,
+  forgotPassword,
   protect,
   restrictTo,
 };
