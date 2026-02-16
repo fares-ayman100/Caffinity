@@ -24,7 +24,12 @@ const limiter = rateLimter({
 });
 
   // Add Http Security Headers
-  app.use(helmet());
+  app.use(
+    helmet({
+      contentSecurityPolicy: false,
+    }),
+  );
+
 
   // Global Middleware
 if (process.env.NODE_ENV == 'development') {
