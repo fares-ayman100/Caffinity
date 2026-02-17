@@ -17,18 +17,20 @@ const reviewsRouter = require('./Routes/reviewsRoutes');
 const app = express();
 
 // swagger-api
-app.use(
-  '/api-docs',
-  swaggerUi.serve,
-  swaggerUi.setup(swaggerSpec, {
-    customCssUrl:
-      'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.17.14/swagger-ui.min.css',
-    customJs: [
-      'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.17.14/swagger-ui-bundle.min.js',
-      'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.17.14/swagger-ui-standalone-preset.min.js',
-    ],
-  }),
-);
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
+// app.use(
+//   '/api-docs',
+//   swaggerUi.serve,
+//   swaggerUi.setup(swaggerSpec, {
+//     customCssUrl:
+//       'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.17.14/swagger-ui.min.css',
+//     customJs: [
+//       'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.17.14/swagger-ui-bundle.min.js',
+//       'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.17.14/swagger-ui-standalone-preset.min.js',
+//     ],
+//   }),
+// );
 const limiter = rateLimter({
   windowMs: 60 * 60 * 1000,
   limit: 100,
