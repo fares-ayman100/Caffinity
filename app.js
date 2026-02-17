@@ -39,7 +39,7 @@ const limiter = rateLimter({
 });
 
   // Add Http Security Headers
-  app.use(helmet());
+  //app.use(helmet());
 
   // Global Middleware
 if (process.env.NODE_ENV == 'development') {
