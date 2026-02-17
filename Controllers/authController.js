@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
 const User = require('../Models/userModel');
 const httpStatus = require('../Utils/httpStatus');
 const catchAsync = require('../Utils/catchAsync');
@@ -7,7 +8,7 @@ const sendEmail = require('../Utils/email');
 const { promisify } = require('util');
 
 // 2) HELPER FUNCTIONS (UTILS)
-const sendToken = (user, statusCode, res) => {
+const sendToken = (user, statusCode, res, sendUser = true) => {
   const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRED_IN,
   });
@@ -22,14 +23,18 @@ const sendToken = (user, statusCode, res) => {
 
   res.cookie('jwt', token, cookieOption);
 
-  res.status(statusCode).json({
+  user.password = undefined;
+
+  const response = {
     status: httpStatus.SUCCESS,
     token,
-    data: {
-      user,
-    },
-  });
+  };
+
+  if (sendUser) response.data = { user };
+
+  res.status(statusCode).json(response);
 };
+
 
 // 3) MIDDLEWARES
 const protect = catchAsync(async (req, res, next) => {
@@ -44,7 +49,7 @@ const protect = catchAsync(async (req, res, next) => {
     token = req.headers.authorization.split(' ')[1];
   }
 
-  if (!token) {
+  if (!token || token === 'loggedout') {
     return next(
       new AppError(
         'your are not logged in! Please login to get access',
@@ -135,8 +140,20 @@ const singIn = catchAsync(async (req, res, next) => {
     return next(new AppError('Incorrect email or password', 401));
   }
 
-  sendToken(user, 200, res);
+  sendToken(user, 200, res, false);
 });
+
+const logout = (req, res) => {
+  const cookieOption = {
+    expires: new Date(Date.now() + 10 * 1000),
+    httpOnly: true,
+  };
+
+  if (process.env.NODE_ENV === 'production')
+    cookieOption.secure = true;
+  res.cookie('jwt', 'loggedout', cookieOption);
+  res.status(200).json({ status: httpStatus.SUCCESS });
+};
 
 const forgotPassword = async (req, res, next) => {
   // 1) get user by email
@@ -150,12 +167,51 @@ const forgotPassword = async (req, res, next) => {
   await user.save({ validateBeforeSave: false });
 
   // 3) send it to email
+  sendEmail({
+    email: user.email,
+    subject: 'Token is valid for 10 minutes',
+    message: resetToken,
+  });
+  res.status(200).json({
+    status: httpStatus.SUCCESS,
+    message: 'Token sent to email',
+  });
 };
+const resetPassword = catchAsync(async (req, res, next) => {
+  // 1) get the user based on the token
+  const hashedToken = crypto
+    .createHash('sha256')
+    .update(req.params.token)
+    .digest('hex');
+
+  const user = await User.findOne({
+    passwordResetToken: hashedToken,
+    passwordResetExpired: { $gt: Date.now() },
+  });
+  // 2) check if token is not expired and the user found set new password
+
+  if (!user) {
+    return next(
+      new AppError('Invalid token or token is expired', 404),
+    );
+  }
+  user.password = req.body.password;
+  user.confirmPassword = req.body.confirmPassword;
+  user.passwordResetToken = undefined;
+  user.passwordResetExpired = undefined;
+  await user.save();
+
+  // 3) set the new changePasswordAt
+  // 4) log the user in and send jwt
+  sendToken(user, 200, res, false);
+});
 
 module.exports = {
   signUp,
   singIn,
+  logout,
   forgotPassword,
+  resetPassword,
   protect,
   restrictTo,
 };
