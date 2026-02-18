@@ -21,7 +21,7 @@ const options = {
       },
     ],
     tags: [
-      { name: 'Authentication', description: 'Sign up and sign in' },
+      { name: 'Authentication', description: 'Sign up, sign in, logout, password reset' },
       { name: 'Products', description: 'Product catalog operations' },
       {
         name: 'Users',
@@ -31,6 +31,10 @@ const options = {
         name: 'Reviews',
         description:
           'Get all reviews, get all reviews on product (by product ID), get review by ID, create review on product, delete review by ID',
+      },
+      {
+        name: 'Orders',
+        description: 'Order management (checkout session, get orders, admin CRUD)',
       },
     ],
     components: {
@@ -98,6 +102,44 @@ const options = {
             user: {
               type: 'object',
               description: 'Populated user (firstName, lastName)',
+            },
+            createdAt: { type: 'string', format: 'date-time' },
+          },
+        },
+        Order: {
+          type: 'object',
+          properties: {
+            _id: { type: 'string' },
+            user: {
+              type: 'string',
+              description: 'User MongoDB ObjectId',
+            },
+            items: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  product: {
+                    type: 'object',
+                    description: 'Populated product (name, price, image)',
+                  },
+                  name: { type: 'string' },
+                  image: { type: 'string' },
+                  price: { type: 'number' },
+                  quantity: { type: 'number', minimum: 1 },
+                },
+              },
+            },
+            totalPrice: { type: 'number' },
+            currency: { type: 'string', default: 'usd' },
+            stripeSessionId: { type: 'string' },
+            paymentStatus: {
+              type: 'string',
+              enum: ['pending', 'paid', 'failed'],
+            },
+            orderStatus: {
+              type: 'string',
+              enum: ['processing', 'completed', 'cancelled'],
             },
             createdAt: { type: 'string', format: 'date-time' },
           },
@@ -175,6 +217,7 @@ const options = {
     path.join(__dirname, 'paths', 'products.js'),
     path.join(__dirname, 'paths', 'users.js'),
     path.join(__dirname, 'paths', 'reviews.js'),
+    path.join(__dirname, 'paths', 'orders.js'),
   ],
 };
 
