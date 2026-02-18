@@ -9,28 +9,7 @@
 
 **A robust RESTful API for Caffinity - Coffee & Beverage E-commerce Platform**
 
-[Features](#-features) • [Installation](#-installation) • [API Documentation](#-api-documentation) • [Deployment](#-deployment)
-
 </div>
-
----
-
-## 📋 Table of Contents
-
-- [About](#-about)
-- [Features](#-features)
-- [Tech Stack](#-tech-stack)
-- [Prerequisites](#-prerequisites)
-- [Installation](#-installation)
-- [Environment Variables](#-environment-variables)
-- [Usage](#-usage)
-- [API Documentation](#-api-documentation)
-- [Project Structure](#-project-structure)
-- [Security Features](#-security-features)
-- [Deployment](#-deployment)
-- [Contributing](#-contributing)
-- [License](#-license)
-- [Author](#-author)
 
 ---
 
@@ -41,7 +20,6 @@
 ### 🌐 Live Demo
 
 - **API Base URL**: `https://caffinity.vercel.app/api/v1`
-- **API Documentation**: `https://caffinity.vercel.app/api-docs`
 - **Health Check**: `https://caffinity.vercel.app/api/v1/health`
 
 ---
@@ -93,11 +71,6 @@
 - ✅ CORS enabled
 - ✅ Parameter pollution prevention
 - ✅ Secure cookies (httpOnly, secure in production)
-
-### 📚 Documentation
-- ✅ Swagger/OpenAPI documentation
-- ✅ Interactive API testing interface
-- ✅ Complete endpoint documentation
 
 ---
 
@@ -172,7 +145,7 @@ Create a `.env` file in the root directory:
 cp .env.example .env
 ```
 
-Then edit `.env` and fill in your configuration (see [Environment Variables](#-environment-variables) section).
+Then edit `.env` and fill in your configuration (see the **Environment Variables** section below).
 
 ### Step 4: Start the Server
 
@@ -190,342 +163,45 @@ The server will start on `http://localhost:3000` (or the port specified in your 
 
 ---
 
-## 🔧 Environment Variables
-
-Create a `.env` file in the root directory with the following variables:
+## 3. Environment Variables
 
 ```env
-# Server Configuration
 NODE_ENV=development
 PORT=3000
 
-# Database
-DATABASE=mongodb+srv://username:password@cluster.mongodb.net/caffinity?retryWrites=true&w=majority
+DATABASE=<your MongoDB connection string>
+DATABASE_PASSWORD=<db password>
 
-# JWT Configuration
-JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
+JWT_SECRET=<your jwt secret>
 JWT_EXPIRED_IN=90d
 JWT_EXPIRED_TOKEN=90
 
-# Email Configuration (Nodemailer)
-EMAIL_HOST=smtp.gmail.com
-EMAIL_PORT=587
-EMAIL_USER=your-email@gmail.com
-EMAIL_PASSWORD=your-app-password
+EMAIL_HOST=<smtp host>          # e.g., smtp.mailtrap.io or smtp.gmail.com
+EMAIL_PORT=<smtp port>          # e.g., 2525 for Mailtrap, 587 for TLS Gmail
+EMAIL_USERNAME=<email username>
+EMAIL_PASSWORD=<email password>
+EMAIL_FROM="Caffinity <no-reply@caffinity.com>"
 
-# Email Configuration (Resend - Alternative)
-RESEND_API_KEY=your-resend-api-key
+STRIPE_SECRET_KEY=<stripe secret key>
+STRIPE_WEBHOOK_SIGNATURE=<stripe webhook secret>
 
-# Stripe Configuration
-STRIPE_SECRET_KEY=sk_test_your-stripe-secret-key
-STRIPE_WEBHOOK_SIGNATURE=whsec_your-webhook-signature
-
-# Frontend URL (for email links)
-FRONTEND_URL=http://localhost:3000
+FRONTEND_URL=https://your-frontend-url.com
 ```
 
-### 🔐 Security Notes
-
-- **Never commit** your `.env` file to version control
-- Use strong, random strings for `JWT_SECRET`
-- Keep your Stripe keys secure
-- Use different credentials for development and production
-
----
-
-## 💻 Usage
-
-### Health Check
-
-Test if the API is running:
-
-```bash
-curl http://localhost:3000/api/v1/health
-```
-
-Response:
-```json
-{
-  "status": "success",
-  "message": "API is running"
-}
-```
-
-### Authentication Example
-
-#### 1. Sign Up
-
-```bash
-curl -X POST http://localhost:3000/api/v1/users/signup \
-  -H "Content-Type: application/json" \
-  -d '{
-    "firstName": "John",
-    "lastName": "Doe",
-    "email": "john@example.com",
-    "password": "password123",
-    "confirmPassword": "password123"
-  }'
-```
-
-#### 2. Sign In
-
-```bash
-curl -X POST http://localhost:3000/api/v1/users/signin \
-  -H "Content-Type: application/json" \
-  -d '{
-    "email": "john@example.com",
-    "password": "password123"
-  }'
-```
-
-Response:
-```json
-{
-  "status": "success",
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-}
-```
-
-#### 3. Use Token in Protected Routes
-
-```bash
-curl http://localhost:3000/api/v1/products \
-  -H "Authorization: Bearer YOUR_TOKEN_HERE"
-```
-
-### Product Operations
-
-#### Get All Products
-
-```bash
-curl http://localhost:3000/api/v1/products
-```
-
-#### Get Products with Filters
-
-```bash
-curl "http://localhost:3000/api/v1/products?category=Hot%20Drinks&price[gte]=3&sort=-price"
-```
-
-#### Create Product (Admin Only)
-
-```bash
-curl -X POST http://localhost:3000/api/v1/products \
-  -H "Authorization: Bearer ADMIN_TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "name": "Espresso",
-    "description": "Rich and bold espresso shot",
-    "price": 3.5,
-    "category": "Hot Drinks"
-  }'
-```
-
----
-
-## 📖 API Documentation
-
-### Interactive Documentation
-
-Once the server is running, visit:
-
-- **Development**: `http://localhost:3000/api-docs`
-- **Production**: `https://caffinity.vercel.app/api-docs`
-
-The Swagger UI provides:
-- Complete API endpoint documentation
-- Request/response schemas
-- Try-it-out functionality
-- Authentication testing
-
-### API Endpoints Overview
-
-#### Authentication (`/api/v1/users`)
-- `POST /signup` - Register new user
-- `POST /signin` - Login user
-- `GET /logout` - Logout user
-- `POST /forgotPassword` - Request password reset
-- `PATCH /resetPassword/:token` - Reset password
-
-#### Products (`/api/v1/products`)
-- `GET /` - Get all products (with filtering, sorting, pagination)
-- `POST /` - Create product (Admin only)
-- `GET /:id` - Get single product
-- `PATCH /:id` - Update product (Admin only)
-- `DELETE /:id` - Delete product (Admin only)
-
-#### Reviews (`/api/v1/reviews`)
-- `GET /` - Get all reviews
-- `GET /:id` - Get review by ID
-- `POST /products/:productId/reviews` - Create review
-- `PATCH /:id` - Update review
-- `DELETE /:id` - Delete review
-
-#### Orders (`/api/v1/orders`)
-- `POST /checkout-session` - Create Stripe checkout session
-- `GET /my-orders` - Get user's orders
-- `GET /` - Get all orders (Admin only)
-- `GET /:id` - Get order by ID (Admin only)
-- `PATCH /:id` - Update order (Admin only)
-- `DELETE /:id` - Delete order (Admin only)
-
-#### Users (`/api/v1/users`)
-- `GET /getMe` - Get current user
-- `PATCH /updateMe` - Update current user
-- `DELETE /deleteMe` - Deactivate account
-- `GET /` - Get all users (Admin only)
-- `GET /:id` - Get user by ID (Admin only)
-- `PATCH /:id` - Update user (Admin only)
-- `DELETE /:id` - Delete user (Admin only)
-
-### Base URL
-
-- **Development**: `http://localhost:3000/api/v1`
-- **Production**: `https://caffinity.vercel.app/api/v1`
-
----
-
-## 📁 Project Structure
+## 🧭 Project Structure (short)
 
 ```
-caffinity/
-├── api/
-│   └── index.js              # Vercel serverless function
-├── config/
-│   ├── database.js           # MongoDB connection
-│   └── apiConfig.js          # API configuration
-├── Controllers/
-│   ├── authController.js     # Authentication logic
-│   ├── errorController.js    # Error handling
-│   ├── ordersController.js   # Order management
-│   ├── productsController.js # Product management
-│   ├── usersController.js    # User management
-│   └── handelrFactory.js     # Reusable CRUD handlers
-├── doc/
-│   ├── swagger.js            # Swagger configuration
-│   └── paths/
-│       ├── authentication.js  # Auth endpoints docs
-│       ├── orders.js         # Order endpoints docs
-│       ├── products.js       # Product endpoints docs
-│       ├── reviews.js        # Review endpoints docs
-│       └── users.js          # User endpoints docs
-├── Models/
-│   ├── ordersModel.js        # Order schema
-│   ├── productsModel.js      # Product schema
-│   ├── reviewsModel.js       # Review schema
-│   └── userModel.js          # User schema
-├── Routes/
-│   ├── ordersRoutes.js       # Order routes
-│   ├── productsRoutes.js     # Product routes
-│   ├── reviewsRoutes.js      # Review routes
-│   └── usersRoutes.js        # User routes
-├── Utils/
-│   ├── apiFeatures.js        # Query filtering/sorting
-│   ├── appError.js           # Custom error class
-│   ├── catchAsync.js         # Async error wrapper
-│   ├── email.js              # Email service
-│   └── httpStatus.js          # HTTP status constants
-├── views/
-│   └── email/                # Email templates (Pug)
-├── .env                      # Environment variables (not in git)
-├── .gitignore
-├── app.js                    # Express app configuration
-├── server.js                 # Server entry point
-├── package.json
-├── vercel.json               # Vercel deployment config
-└── README.md                 # This file
+Caffinity/
+├─ Controllers/
+├─ Models/
+├─ Routes/
+├─ Utils/
+├─ doc/
+├─ views/
+├─ app.js
+├─ server.js
+└─ README.md
 ```
-
----
-
-## 🔒 Security Features
-
-### Implemented Security Measures
-
-1. **Helmet.js** - Sets various HTTP headers for security
-2. **Rate Limiting** - 100 requests per hour per IP
-3. **Data Sanitization** - Prevents NoSQL injection attacks
-4. **XSS Protection** - Input sanitization
-5. **CORS** - Cross-Origin Resource Sharing configured
-6. **Parameter Pollution Prevention** - Using hpp middleware
-7. **Secure Cookies** - httpOnly and secure flags
-8. **Password Hashing** - bcrypt with salt rounds
-9. **JWT Security** - Token expiration and validation
-10. **Input Validation** - Request body validation
-
-### Best Practices
-
-- ✅ Environment variables for sensitive data
-- ✅ Error handling without exposing sensitive information
-- ✅ Input validation and sanitization
-- ✅ Secure password reset flow
-- ✅ Role-based access control
-
----
-
-## 🚢 Deployment
-
-### Deploy to Vercel
-
-1. **Install Vercel CLI** (if not already installed):
-   ```bash
-   npm i -g vercel
-   ```
-
-2. **Login to Vercel**:
-   ```bash
-   vercel login
-   ```
-
-3. **Deploy**:
-   ```bash
-   vercel
-   ```
-
-4. **Set Environment Variables** in Vercel Dashboard:
-   - Go to your project settings
-   - Add all environment variables from your `.env` file
-
-5. **Redeploy** after adding environment variables:
-   ```bash
-   vercel --prod
-   ```
-
-### Deploy to Other Platforms
-
-The API can be deployed to any Node.js hosting platform:
-- **Heroku**
-- **Railway**
-- **Render**
-- **DigitalOcean**
-- **AWS**
-- **Google Cloud Platform**
-
-Make sure to:
-- Set all environment variables
-- Configure MongoDB connection string
-- Set `NODE_ENV=production`
-- Update CORS settings if needed
-
----
-
-## 🤝 Contributing
-
-Contributions are welcome! Please follow these steps:
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-### Development Guidelines
-
-- Follow the existing code style
-- Write meaningful commit messages
-- Add comments for complex logic
-- Update documentation as needed
-- Test your changes thoroughly
 
 ---
 
