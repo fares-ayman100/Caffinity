@@ -12,9 +12,11 @@ const swaggerSpec = require('./doc/swagger');
 const httpStatus = require('./Utils/httpStatus');
 const AppError = require('./Utils/appError');
 const errorController = require('./Controllers/errorController');
-const productsRoutes = require('./Routes/productsRoutes');
-const usersRoutes = require('./Routes/usersRoutes');
+const ordersController = require('./Controllers/ordersController');
+const productsRouter = require('./Routes/productsRoutes');
+const usersRouter = require('./Routes/usersRoutes');
 const reviewsRouter = require('./Routes/reviewsRoutes');
+const ordersRouter = require('./Routes/ordersRoutes');
 
 const app = express();
 
@@ -49,6 +51,12 @@ if (process.env.NODE_ENV == 'development') {
 // Implement CORS
 app.use(cors());
 
+app.post(
+  '/webhook-checkout',
+  express.raw({ type: 'application/json' }),
+  ordersController.webhookCheckout,
+);
+
 app.use(express.json({ limit: '10kb' }));
 
 // Enable extended query parsing so Express can handle nested filters (e.g. price[gte]=3)
@@ -78,9 +86,10 @@ app.get('/api/v1/health', (req, res) => {
   });
 });
 
-app.use('/api/v1/products', productsRoutes);
-app.use('/api/v1/users', usersRoutes);
+app.use('/api/v1/products', productsRouter);
+app.use('/api/v1/users', usersRouter);
 app.use('/api/v1/reviews', reviewsRouter);
+app.use('/api/v1/orders', ordersRouter);
 
 app.use('/', (req, res, next) => {
   next(
