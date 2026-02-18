@@ -19,9 +19,7 @@
 
 ### 🌐 Live Demo
 
-- **API Base URL**: `https://caffinity.vercel.app/api/v1`
-- **Health Check**: `https://caffinity.vercel.app/api/v1/health`
-
+- **API Base URL**: `https://caffinity-api.vercel.app/api-docs/`
 ---
 
 ## ✨ Features
@@ -215,8 +213,8 @@ This project is licensed under the ISC License.
 
 **Fares Ayman**
 
-- GitHub: [@yourusername](https://github.com/yourusername)
-- Email: your.email@example.com
+- GitHub: [Fares Ayman](https://github.com/fares-ayman100)
+- Email: fareshe73@gmail.com
 
 ---
 
@@ -236,3 +234,4 @@ This project is licensed under the ISC License.
 ⭐ Star this repo if you find it helpful!
 
 </div>
+
