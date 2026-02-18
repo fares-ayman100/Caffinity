@@ -16,7 +16,7 @@ const options = {
         description: 'Development',
       },
       {
-        url: 'https://caffinity.vercel.app',
+        url: 'https://caffinity.vercel.app/api/v1',
         description: 'Production',
       },
     ],

@@ -1,0 +1,19 @@
+extends baseEmail
+
+block content
+    p Hi #{firstName},
+    p Welcome to Caffinity Store, we're glad to have you 🎉
+    p Thanks for shopping with us! Your order is being prepared.
+
+    table.btn.btn-primary(role='presentation', border='0', cellpadding='0', cellspacing='0')
+        tbody
+            tr
+                td(align='left')
+                    table(role='presentation', border='0', cellpadding='0', cellspacing='0')
+                        tbody
+                            tr
+                                td
+                                    a(href=url, target='_blank') View Your Order
+
+    p If you need any help, feel free to contact us anytime.
+    p - Fares Ayman, CEO

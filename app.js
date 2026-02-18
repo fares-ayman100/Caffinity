@@ -1,10 +1,12 @@
 const express = require('express');
 const morgan = require('morgan');
+const path = require('path');
 const cookieParser = require('cookie-parser');
 const rateLimter = require('express-rate-limit');
 const ExpressMongoSanitize = require('express-mongo-sanitize');
 const helmet = require('helmet');
 const hpp = require('hpp');
+const cors = require('cors');
 const swaggerUi = require('swagger-ui-express');
 const swaggerSpec = require('./doc/swagger');
 const httpStatus = require('./Utils/httpStatus');
@@ -44,10 +46,15 @@ if (process.env.NODE_ENV == 'development') {
   app.use(morgan('dev'));
 }
 
+// Implement CORS
+app.use(cors());
+
 app.use(express.json({ limit: '10kb' }));
 
 // Enable extended query parsing so Express can handle nested filters (e.g. price[gte]=3)
 app.set('query parser', 'extended');
+app.set('view engine', 'pug');
+app.set('views', path.join(__dirname, 'views'));
 
 // Against from NoSql query injection
 app.use(ExpressMongoSanitize());

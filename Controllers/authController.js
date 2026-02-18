@@ -4,7 +4,7 @@ const User = require('../Models/userModel');
 const httpStatus = require('../Utils/httpStatus');
 const catchAsync = require('../Utils/catchAsync');
 const AppError = require('../Utils/appError');
-const sendEmail = require('../Utils/email');
+const Email = require('../Utils/email');
 const { promisify } = require('util');
 
 // 2) HELPER FUNCTIONS (UTILS)
@@ -115,11 +115,8 @@ const signUp = catchAsync(async (req, res, next) => {
     confirmPassword: req.body.confirmPassword,
   });
 
-  // sendEmail({
-  //   email: newUser.email,
-  //   subject: 'Welcome',
-  //   message: 'Welcome in caffinity family',
-  // });
+  const url = `${req.protocol}://${req.get('host')}/account`;
+  await new Email(newUser, url).sendWelcome();
 
   sendToken(newUser, 201, res);
 });
@@ -155,28 +152,46 @@ const logout = (req, res) => {
   res.status(200).json({ status: httpStatus.SUCCESS });
 };
 
-const forgotPassword = async (req, res, next) => {
+const forgotPassword = catchAsync(async (req, res, next) => {
   // 1) get user by email
+
+  if (!req.body || !req.body.email) {
+    return next(new AppError('Please provide your email', 400));
+  }
   const user = await User.findOne({ email: req.body.email });
   if (!user) {
-    return next(new AppError('User is not found', 404));
+    return next(
+      new AppError('There is no user with email address', 404),
+    );
   }
 
   // 2) generate random reset token
   const resetToken = user.createPasswordResetToken();
   await user.save({ validateBeforeSave: false });
 
-  // 3) send it to email
-  sendEmail({
-    email: user.email,
-    subject: 'Token is valid for 10 minutes',
-    message: resetToken,
-  });
-  res.status(200).json({
-    status: httpStatus.SUCCESS,
-    message: 'Token sent to email',
-  });
-};
+  try {
+    const resetURL = `${req.protocol}://${req.get('host')}/api/v1/users/resetPassword/${resetToken}`;
+
+    await new Email(user, resetURL).sendResetPassword();
+    res.status(200).json({
+      status: httpStatus.SUCCESS,
+      message: 'Token sent to email',
+    });
+  } catch (err) {
+    ((user.passwordResetToken = undefined),
+      (user.passwordResetExpired = undefined));
+
+    await user.save({ validateBeforeSave: false });
+
+    return next(
+      new AppError(
+        'There was an error sending email ,Try agin later!',
+        500,
+      ),
+    );
+  }
+});
+
 const resetPassword = catchAsync(async (req, res, next) => {
   // 1) get the user based on the token
   const hashedToken = crypto
