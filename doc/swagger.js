@@ -21,8 +21,11 @@ const options = {
       },
     ],
     tags: [
-      { name: 'Authentication', description: 'Sign up, sign in, logout, password reset' },
       { name: 'Products', description: 'Product catalog operations' },
+      {
+        name: 'Authentication',
+        description: 'Sign up, sign in, logout, password reset',
+      },
       {
         name: 'Users',
         description: 'User management (profile, admin CRUD)',
@@ -34,7 +37,8 @@ const options = {
       },
       {
         name: 'Orders',
-        description: 'Order management (checkout session, get orders, admin CRUD)',
+        description:
+          'Order management (checkout session, get orders, admin CRUD)',
       },
     ],
     components: {
@@ -121,7 +125,8 @@ const options = {
                 properties: {
                   product: {
                     type: 'object',
-                    description: 'Populated product (name, price, image)',
+                    description:
+                      'Populated product (name, price, image)',
                   },
                   name: { type: 'string' },
                   image: { type: 'string' },
