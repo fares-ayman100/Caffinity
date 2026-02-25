@@ -26,36 +26,36 @@ module.exports = class Email {
   }
 
   async send(template, subject) {
-    // 1) Render Html
-    const html = pug.renderFile(
-      `${__dirname}/../views/email/${template}.pug`,
-      {
-        firstName: this.firstName,
-        url: this.url,
-        subject,
-      },
-    );
+    try {
+      // 1) Render Html
+      const html = pug.renderFile(
+        `${__dirname}/../views/email/${template}.pug`,
+        {
+          firstName: this.firstName,
+          url: this.url,
+          subject,
+        },
+      );
 
-    const mailOptions = {
-      from: this.from,
-      to: this.to,
-      subject,
-      html,
-      text: htmlToText.convert(html),
-    };
-
-    // 2) If production → use Resend API
-    if (process.env.NODE_ENV === 'production') {
-      return await resend.emails.send({
+      const mailOptions = {
         from: this.from,
         to: this.to,
         subject,
         html,
-      });
+        text: htmlToText.convert(html), // to reduce the spam
+      };
+
+      // 2) If production → use Resend API
+      if (process.env.NODE_ENV === 'production') {
+        return await resend.emails.send(mailOptions);
+      }
+
+      // 3) If dev → use Nodemailer
+      await this.newTransport().sendMail(mailOptions);
+    } catch (err) {
+      console.error('Email sending failed:', err);
+      throw err;
     }
-    
-    // 3) If dev → use Nodemailer
-    await this.newTransport().sendMail(mailOptions);
   }
 
   async sendWelcome() {
