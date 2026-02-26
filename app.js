@@ -70,7 +70,7 @@ app.set('view engine', 'pug');
 app.set('views', path.join(__dirname, 'views'));
 
 // Against from NoSql query injection
-app.use(ExpressMongoSanitize());
+//app.use(ExpressMongoSanitize());
 
 // Prevent parameter pollution
 app.use(
