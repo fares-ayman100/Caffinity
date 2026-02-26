@@ -57,6 +57,7 @@ app.post(
   ordersController.webhookCheckout,
 );
 
+app.use('/api', limiter);
 
 app.use(express.json({ limit: '10kb' }));
 
@@ -89,7 +90,6 @@ app.use('/api/v1/products', productsRouter);
 app.use('/api/v1/users', usersRouter);
 app.use('/api/v1/reviews', reviewsRouter);
 app.use('/api/v1/orders', ordersRouter);
-app.use('/api', limiter);
 
 
 app.use('/', (req, res, next) => {
