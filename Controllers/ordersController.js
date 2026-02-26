@@ -8,7 +8,7 @@ const Order = require('../Models/ordersModel');
 const User = require('../Models/userModel');
 const factory = require('./handelrFactory');
 
-const checkoutSession = catchAsync(async (req, res, next) => {
+exports.checkoutSession = catchAsync(async (req, res, next) => {
   const items = req.body.items;
 
   if (!items || !Array.isArray(items) || items.length === 0) {
@@ -78,7 +78,7 @@ const checkoutSession = catchAsync(async (req, res, next) => {
   });
 });
 
-const createOrderFromCheckout = async (session) => {
+const createOrderCheckout = async (session) => {
   // 1) get user
   const user = await User.findOne({
     email: session.customer_email,
@@ -123,11 +123,9 @@ const createOrderFromCheckout = async (session) => {
   });
 };
 
-const webhookCheckout = async (req, res) => {
-  const signature = req.headers['stripe-signature'];
-
+exports.webhookCheckout = async (req, res) => {
   let event;
-
+  const signature = req.headers['stripe-signature'];
   try {
     event = stripe.webhooks.constructEvent(
       req.body,
@@ -140,12 +138,13 @@ const webhookCheckout = async (req, res) => {
 
   // checkout completed
   if (event.type === 'checkout.session.completed') {
-    await createOrderFromCheckout(event.data.object);
+    await createOrderCheckout(event.data.object);
   }
 
   res.status(200).json({ received: true });
 };
-const getMyOrders = catchAsync(async (req, res, next) => {
+
+exports.getMyOrders = catchAsync(async (req, res, next) => {
   const orders = await Order.find({ user: req.user.id });
 
   res.status(200).json({
@@ -155,17 +154,8 @@ const getMyOrders = catchAsync(async (req, res, next) => {
   });
 });
 
-const getAllOrders = factory.getAllDoc(Order);
-const getOneOrder = factory.getDoc(Order);
-const updateOrder = factory.updateDoc(Order);
-const deleteOrder = factory.deleteDoc(Order);
-
-module.exports = {
-  checkoutSession,
-  webhookCheckout,
-  getAllOrders,
-  getOneOrder,
-  updateOrder,
-  deleteOrder,
-  getMyOrders,
-};
+exports.getAllOrders = factory.getAllDoc(Order);
+exports.createOrder = factory.createDoc(Order);
+exports.getOneOrder = factory.getDoc(Order);
+exports.updateOrder = factory.updateDoc(Order);
+exports.deleteOrder = factory.deleteDoc(Order);

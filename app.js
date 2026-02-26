@@ -57,6 +57,7 @@ app.post(
   ordersController.webhookCheckout,
 );
 
+
 app.use(express.json({ limit: '10kb' }));
 
 // Enable extended query parsing so Express can handle nested filters (e.g. price[gte]=3)
@@ -77,8 +78,6 @@ app.use(hpp({whitelist:[
 // Enable reading cookies from requests
 app.use(cookieParser());
 
-app.use('/api', limiter);
-
 app.get('/api/v1/health', (req, res) => {
   res.status(200).json({
     status: httpStatus.SUCCESS,
@@ -90,6 +89,8 @@ app.use('/api/v1/products', productsRouter);
 app.use('/api/v1/users', usersRouter);
 app.use('/api/v1/reviews', reviewsRouter);
 app.use('/api/v1/orders', ordersRouter);
+app.use('/api', limiter);
+
 
 app.use('/', (req, res, next) => {
   next(
