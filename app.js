@@ -52,6 +52,7 @@ if (process.env.NODE_ENV == 'development') {
 app.use(cors());
 
 app.options('*', cors());
+app.set('trust proxy', 1);
 
 app.post(
   '/webhook-checkout',
