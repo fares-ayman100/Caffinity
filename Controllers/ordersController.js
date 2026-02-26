@@ -46,7 +46,7 @@ exports.checkoutSession = catchAsync(async (req, res, next) => {
     return {
       price_data: {
         currency: product.currency.toLowerCase(),
-        unit_amount: Math.round(product.price * 100),
+        unit_amount: Math.round(product.price * 100), // to convert to cent
         product_data: {
           name: product.name,
           description: product.description,
@@ -66,9 +66,7 @@ exports.checkoutSession = catchAsync(async (req, res, next) => {
     // order-confirmation
     success_url: `${req.protocol}://${req.get('host')}/order-confirmation`,
     cancel_url: `${req.protocol}://${req.get('host')}/cart`,
-
     customer_email: req.user.email,
-
     line_items,
   });
 
@@ -90,6 +88,7 @@ const createOrderCheckout = async (session) => {
     stripeSessionId: session.id,
   });
 
+  // to prevent dublicate webhook occure
   if (existingOrder) {
     console.log('Webhook duplicate ignored');
     return;
@@ -107,7 +106,7 @@ const createOrderCheckout = async (session) => {
       item.price.product.metadata.productId,
     ),
     name: item.description,
-    price: item.price.unit_amount / 100,
+    price: item.price.unit_amount / 100, // to convert from cent to primary currence
     quantity: item.quantity,
     image: item.price.product.images?.[0] || '',
   }));
@@ -121,11 +120,12 @@ const createOrderCheckout = async (session) => {
     stripeSessionId: session.id,
     paymentStatus: 'paid',
   });
-};
+};;
 
 exports.webhookCheckout = async (req, res) => {
-  let event;
   const signature = req.headers['stripe-signature'];
+  let event;
+
   try {
     event = stripe.webhooks.constructEvent(
       req.body,
