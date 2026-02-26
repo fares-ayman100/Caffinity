@@ -8,7 +8,7 @@ const Email = require('../Utils/email');
 const { promisify } = require('util');
 
 // 2) HELPER FUNCTIONS (UTILS)
-const sendToken = (user, statusCode, res, sendUser = true) => {
+const sendToken = (user, statusCode, req, res, sendUser = true) => {
   const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRED_IN,
   });
@@ -16,12 +16,10 @@ const sendToken = (user, statusCode, res, sendUser = true) => {
   const cookieOption = {
     maxAge: process.env.JWT_EXPIRED_TOKEN * 24 * 60 * 60 * 1000,
     httpOnly: true,
+    secure:
+      req.secure || req.headers['x-forwarded-proto'] === 'https',
+    sameSite: 'none',
   };
-
-  if (process.env.NODE_ENV === 'production') {
-    cookieOption.secure = true;
-    cookieOption.sameSite = 'none';
-  }
 
   res.cookie('jwt', token, cookieOption);
 
@@ -120,7 +118,7 @@ const signUp = catchAsync(async (req, res, next) => {
   const url = `${req.protocol}://${req.get('host')}/account`;
   await new Email(newUser, url).sendWelcome();
 
-  sendToken(newUser, 201, res);
+  sendToken(newUser, 201, req, res);
 });
 
 const singIn = catchAsync(async (req, res, next) => {
@@ -139,20 +137,17 @@ const singIn = catchAsync(async (req, res, next) => {
     return next(new AppError('Incorrect email or password', 401));
   }
 
-  sendToken(user, 200, res, false);
+  sendToken(user, 200, req, res, false);
 });
 
 const logout = (req, res) => {
-  const cookieOption = {
-    expires: new Date(Date.now() + 10 * 1000),
+  res.clearCookie('jwt', {
     httpOnly: true,
-  };
+    secure:
+      req.secure || req.headers['x-forwarded-proto'] === 'https',
+    sameSite: 'none',
+  });
 
-  if (process.env.NODE_ENV === 'production') {
-    cookieOption.secure = true;
-    cookieOption.sameSite = 'none';
-  }  
-  res.cookie('jwt', 'loggedout', cookieOption);
   res.status(200).json({ status: httpStatus.SUCCESS });
 };
 
@@ -222,7 +217,7 @@ const resetPassword = catchAsync(async (req, res, next) => {
 
   // 3) set the new changePasswordAt
   // 4) log the user in and send jwt
-  sendToken(user, 200, res, false);
+  sendToken(user, 200, req, res, false);
 });
 
 module.exports = {
