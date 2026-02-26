@@ -65,6 +65,7 @@ app.use('/api', limiter);
 
 app.use(express.json({ limit: '10kb' }));
 
+//can handle nested filters (e.g. price[gte]=3)
 app.use((req, res, next) => {
   const url = req.url.split('?')[1];
   if (url) {
@@ -73,14 +74,11 @@ app.use((req, res, next) => {
   next();
 });
 
-// Enable extended query parsing so Express can handle nested filters (e.g. price[gte]=3)
-
-//app.set('query parser', 'extended');
 app.set('view engine', 'pug');
 app.set('views', path.join(__dirname, 'views'));
 
 // Against from NoSql query injection
-//app.use(ExpressMongoSanitize());
+app.use(ExpressMongoSanitize());
 
 // Prevent parameter pollution
 app.use(

@@ -5,7 +5,6 @@ const AppError = require('../Utils/appError');
 
 const getAllDoc = (Model) =>
   catchAsync(async (req, res, next) => {
-    console.log('REQ.QUERY:', req.query);
     // this 2 line for Nested Get Reviews
     let filter = {};
     if (req.params.productId)
