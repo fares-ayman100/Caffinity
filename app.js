@@ -73,11 +73,16 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(ExpressMongoSanitize());
 
 // Prevent parameter pollution
-app.use(hpp({whitelist:[
-  "category",
-  "ratingsQuantity",
-  "ratingsAverage"
-]}));
+app.use(
+  hpp({
+    whitelist: [
+      'category',
+      'ratingsQuantity',
+      'ratingsAverage',
+      'price',
+    ],
+  }),
+);
 
 // Enable reading cookies from requests
 app.use(cookieParser());
