@@ -51,6 +51,8 @@ if (process.env.NODE_ENV == 'development') {
 // Implement CORS
 app.use(cors());
 
+app.options('*', cors());
+
 app.post(
   '/webhook-checkout',
   express.raw({ type: 'application/json' }),
