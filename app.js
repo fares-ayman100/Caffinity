@@ -34,12 +34,13 @@ app.use(
     ],
   }),
 );
-const limiter = rateLimter({
-  windowMs: 60 * 60 * 1000,
-  limit: 100,
-  message:
-    'Too many requests from this IP, please try again in an hour!.',
-});
+
+// const limiter = rateLimter({
+//   windowMs: 60 * 60 * 1000,
+//   limit: 100,
+//   message:
+//     'Too many requests from this IP, please try again in an hour!.',
+// });
 
   // Add Http Security Headers
   app.use(helmet());
@@ -62,7 +63,7 @@ app.post(
   ordersController.webhookCheckout,
 );
 
-app.use('/api', limiter);
+// app.use('/api', limiter);
 
 app.use(express.json({ limit: '10kb' }));
 
