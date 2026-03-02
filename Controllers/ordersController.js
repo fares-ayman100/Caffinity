@@ -65,7 +65,7 @@ exports.checkoutSession = catchAsync(async (req, res, next) => {
     payment_method_types: ['card'],
     // order-confirmation
     success_url: `${req.protocol}://${req.get('host')}/order-confirmation`,
-    cancel_url: `${req.protocol}://${req.get('host')}/cart`,
+    cancel_url: `${req.protocol}://${req.get('host')}`,
     customer_email: req.user.email,
     line_items,
   });
