@@ -64,8 +64,8 @@ exports.checkoutSession = catchAsync(async (req, res, next) => {
     mode: 'payment',
     payment_method_types: ['card'],
     // order-confirmation
-    success_url: `${req.protocol}://${req.get('host')}/order-confirmation`,
-    cancel_url: `${req.protocol}://${req.get('host')}`,
+    success_url: `https://ecommerce-depi.vercel.app/order-confirmation`,
+    cancel_url: `https://ecommerce-depi.vercel.app/`,
     customer_email: req.user.email,
     line_items,
   });
