@@ -38,7 +38,7 @@ const options = {
       {
         name: 'Orders',
         description:
-          'Order management (checkout session, get orders, admin CRUD)',
+          'Order management (checkout session, get orders, verify order, admin CRUD)',
       },
     ],
     components: {

@@ -67,7 +67,56 @@
  *       401:
  *         $ref: '#/components/responses/Unauthorized'
  */
-
+/**
+ * @openapi
+ * /orders/verify/{sessionId}:
+ *   get:
+ *     tags:
+ *       - Orders
+ *     summary: Verify payment status by Stripe session ID
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: sessionId
+ *         required: true
+ *         description: Stripe Checkout Session ID returned in the success URL query params.
+ *         schema:
+ *           type: string
+ *           example: cs_test_a1b2c3d4e5
+ *     responses:
+ *       200:
+ *         description: Payment status retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   enum: [pending, paid, failed]
+ *                   example: paid
+ *       404:
+ *         description: Order not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: Not Found
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: error
+ */
 /**
  * @openapi
  * /orders:
