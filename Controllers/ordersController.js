@@ -64,7 +64,7 @@ exports.checkoutSession = catchAsync(async (req, res, next) => {
     mode: 'payment',
     payment_method_types: ['card'],
     // order-confirmation
-    success_url: `https://ecommerce-depi.vercel.app/order-confirmation`,
+    success_url: `https://ecommerce-depi.vercel.app/order-confirmation?session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: `https://ecommerce-depi.vercel.app/payment-error`,
     customer_email: req.user.email,
     line_items,
@@ -152,6 +152,15 @@ exports.getMyOrders = catchAsync(async (req, res, next) => {
     results: orders.length,
     data: orders,
   });
+});
+exports.verifyOrder = catchAsync(async (req, res, next) => {
+  const order = await Order.findOne({
+    stripeSessionId: req.params.sessionId,
+  });
+  if (!order) {
+    return res.status(404).json({ status: 'Not Found' });
+  }
+  res.status(200).json({ status: order.paymentStatus });
 });
 
 exports.getAllOrders = factory.getAllDoc(Order);

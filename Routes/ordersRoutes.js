@@ -11,6 +11,8 @@ router
 
 router.get('/my-orders', ordersController.getMyOrders);
 
+router.get("/verify/:sessionId",ordersController.verifyOrder)
+
 router.use(authController.restrictTo('admin'));
 
 router.route('/').get(ordersController.getAllOrders);
