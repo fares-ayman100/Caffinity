@@ -115,7 +115,7 @@ const signUp = catchAsync(async (req, res, next) => {
     confirmPassword: req.body.confirmPassword,
   });
 
-  const url = `${req.protocol}://${req.get('host')}/account`;
+  const url = `https://ecommerce-depi.vercel.app/account`;
   await new Email(newUser, url).sendWelcome();
 
   sendToken(newUser, 201, req, res);
