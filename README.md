@@ -62,6 +62,11 @@
 - ✅ Update and delete reviews
 - ✅ Automatic rating calculation
 
+### 📩 Email (notifications)
+- ✅ Welcome Email when a new user signs up
+- ✅ Password Reset Email when a user requests to reset their password
+- ✅ Order Confirmation Email after a successful purchase
+
 ### 🛡️ Security
 - ✅ Helmet.js for HTTP security headers
 - ✅ Rate limiting (100 requests/hour)
@@ -72,95 +77,31 @@
 - ✅ Secure cookies (httpOnly, secure in production)
 
 ---
+## 🛠 Tech Stack
 
-## 🛠️ Tech Stack
+**Backend:** Node.js, Express, MongoDB, Mongoose, Stripe API, Pug (templating)
+**Dev Tools:** nodemon, Morgan
+**Email Service:** Resend , nodemailer
+**Documentation:** Swagger UI
+**Other Utilities** validator ,slugify , Pug
 
-### Core
-- **Runtime**: Node.js
-- **Framework**: Express.js
-- **Database**: MongoDB with Mongoose ODM
-
-### Authentication & Security
-- **JWT**: jsonwebtoken
-- **Password Hashing**: bcryptjs
-- **Security**: helmet, express-mongo-sanitize, hpp
-
-### Payment Processing
-- **Payment Gateway**: Stripe
-
-### Email Service
-- **Email**: Nodemailer, Resend
-
-### Documentation
-- **API Docs**: Swagger UI, swagger-jsdoc
-
-### Development Tools
-- **Process Manager**: Nodemon
-- **Environment Variables**: dotenv
-- **Logging**: Morgan
-
-### Other Utilities
-- **Validation**: validator
-- **Slug Generation**: slugify
-- **Template Engine**: Pug
 
 ---
 
-## 📦 Prerequisites
+## 📦 Installation & Setup
 
-Before you begin, ensure you have the following installed:
-
-- **Node.js** (v18 or higher)
-- **npm** or **yarn**
-- **MongoDB** (local installation or MongoDB Atlas account)
-- **Git**
-
-### Optional but Recommended
-- **Postman** or **Insomnia** for API testing
-- **MongoDB Compass** for database management
-
----
-
-## 🚀 Installation
-
-### Step 1: Clone the Repository
+### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/yourusername/caffinity.git
+git clone https://github.com/fares-ayman100/caffinity.git
 cd caffinity
 ```
 
-### Step 2: Install Dependencies
+### 2. Install Dependencies
 
 ```bash
 npm install
 ```
-
-### Step 3: Set Up Environment Variables
-
-Create a `.env` file in the root directory:
-
-```bash
-cp .env.example .env
-```
-
-Then edit `.env` and fill in your configuration (see the **Environment Variables** section below).
-
-### Step 4: Start the Server
-
-#### Development Mode
-```bash
-npm start
-```
-
-#### Production Mode
-```bash
-npm run start:prod
-```
-
-The server will start on `http://localhost:3000` (or the port specified in your `.env` file).
-
----
 
 ## 3. Environment Variables
 
@@ -169,7 +110,6 @@ NODE_ENV=development
 PORT=3000
 
 DATABASE=<your MongoDB connection string>
-DATABASE_PASSWORD=<db password>
 
 JWT_SECRET=<your jwt secret>
 JWT_EXPIRED_IN=90d
@@ -181,11 +121,26 @@ EMAIL_USERNAME=<email username>
 EMAIL_PASSWORD=<email password>
 EMAIL_FROM="Caffinity <no-reply@caffinity.com>"
 
+RESEND_API_KEY=<API KEY>
+
 STRIPE_SECRET_KEY=<stripe secret key>
 STRIPE_WEBHOOK_SIGNATURE=<stripe webhook secret>
 
-FRONTEND_URL=https://your-frontend-url.com
 ```
+
+### 4. Run (development)
+
+```bash
+npm start
+```
+
+### 5. Production Mode
+```bash
+npm run start:prod
+```
+---
+
+
 
 ## 🧭 Project Structure (short)
 
@@ -235,6 +190,7 @@ This project is licensed under the ISC License.
 ⭐ Star this repo if you find it helpful!
 
 </div>
+
 
 
 
