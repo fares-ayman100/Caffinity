@@ -19,7 +19,8 @@
 
 ### 🌐 Live Demo
 
-- [📋 API DOC ](https://caffinity-api.vercel.app/api-docs/)
+- 🌍 Website: https://ecommerce-depi.vercel.app/
+- 📋 API Documentation: https://caffinity-api.vercel.app/api-docs/
 ---
 
 ## ✨ Features
@@ -234,5 +235,6 @@ This project is licensed under the ISC License.
 ⭐ Star this repo if you find it helpful!
 
 </div>
+
 
 
