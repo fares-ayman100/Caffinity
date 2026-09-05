@@ -93,7 +93,7 @@
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/fares-ayman100/caffinity.git
+git clone https://github.com/fares-aym2n/Caffinity.git
 cd caffinity
 ```
 
@@ -169,7 +169,7 @@ This project is licensed under the ISC License.
 
 **Fares Ayman**
 
-- GitHub: [Fares Ayman](https://github.com/fares-ayman100)
+- GitHub: [Fares Ayman](https://github.com/fares-aym2n)
 - Email: fareshe73@gmail.com
 
 ---
